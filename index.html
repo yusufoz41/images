@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Osso Slider</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%%;
+      height: 100%%;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #161c31;
+    }
+    .slider-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .slide {
+      position: absolute;
+      width: 100%%;
+      height: 100%%;
+      object-fit: cover;
+      transition: opacity 1.8s ease-in-out;
+      opacity: 0;
+      filter: brightness(0.7) contrast(1.1);
+    }
+    .slide.active { opacity: 1; }
+    .overlay {
+      position: absolute;
+      width: 100%%;
+      height: 100%%;
+      background: linear-gradient(to bottom,#161c31 0%%,rgba(22,28,49,0.8) 10%%,rgba(22,28,49,0.4) 20%%,rgba(22,28,49,0) 40%%,rgba(22,28,49,0) 60%%,rgba(22,28,49,0.4) 80%%,rgba(22,28,49,0.8) 90%%,#161c31 100%%),
+                  linear-gradient(to right,#161c31 0%%,rgba(22,28,49,0.7) 15%%,rgba(22,28,49,0.2) 30%%,rgba(22,28,49,0) 50%%,rgba(22,28,49,0.2) 70%%,rgba(22,28,49,0.7) 85%%,#161c31 100%%);
+      z-index: 1;
+      top: 0;
+      left: 0;
+    }
+    .text-container {
+      position: absolute;
+      z-index: 2;
+      width: 60%%;
+      text-align: left;
+      top: 55%%;
+      left: 10%%;
+      transform: translateY(-50%%);
+      color: white;
+      padding: 20px;
+    }
+    .typing-text {
+      font-size: 1.8rem;
+      font-weight: 500;
+      line-height: 1.4;
+      min-height: 80px;
+    }
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background: white;
+      margin-left: 4px;
+      animation: blink 0.7s infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink {
+      0%%, 100%% { opacity: 1; }
+      50%% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slider-container">
+    <div class="overlay"></div>
+    <img class="slide active" src="hsbq66.webp" alt="Slide 1">
+    <img class="slide" src="o67q07.webp" alt="Slide 2">
+    <img class="slide" src="5lv2ay.webp" alt="Slide 3">
+    <div class="text-container">
+      <div id="typedText" class="typing-text"></div>
+    </div>
+  </div>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) %% slides.length;
+      slides[current].classList.add('active');
+    }, 8000);
+
+    const fullText = [
+      {text: "Her şey neyin üzerine kurulduğuyla başlar.", speed: 50},
+      {text: "21 Yıldır Güvenle!", speed: 50, delayBefore: 2000}
+    ];
+    const typedTextElement = document.getElementById('typedText');
+    let currentLine = 0, charIndex = 0, isTyping = false;
+
+    function typeWriter() {
+      if (isTyping) return;
+      isTyping = true;
+      const line = fullText[currentLine];
+      if (charIndex === 0 && line.delayBefore) {
+        setTimeout(continueTyping, line.delayBefore);
+        return;
+      }
+      continueTyping();
+      function continueTyping() {
+        if (charIndex <= line.text.length) {
+          let displayText = '';
+          for (let i = 0; i < currentLine; i++) {
+            displayText += fullText[i].text + '<br>';
+          }
+          displayText += line.text.substring(0, charIndex);
+          typedTextElement.innerHTML = displayText + '<span class="cursor"></span>';
+          charIndex++;
+          setTimeout(() => { isTyping = false; typeWriter(); }, line.speed);
+        } else {
+          charIndex = 0;
+          currentLine++;
+          if (currentLine >= fullText.length) {
+            currentLine = 0;
+            typedTextElement.innerHTML = fullText.map(t => t.text).join('<br>') + '<span class="cursor"></span>';
+            isTyping = false;
+            return;
+          }
+          isTyping = false;
+          typeWriter();
+        }
+      }
+    }
+    setTimeout(typeWriter, 1000);
+  </script>
+</body>
+</html>
